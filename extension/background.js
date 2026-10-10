@@ -3,6 +3,11 @@ import { onMessage, onTabRemoved } from "./sw/loop.js";
 import { toggleVoice } from "./sw/voice.js";
 
 chrome.runtime.onMessage.addListener((msg, sender, reply) => {
+  // Live volume from the offscreen document -> the page's visualizer (section 6.3).
+  if (msg?.type === "OFFSCREEN_LEVEL") {
+    chrome.tabs.sendMessage(msg.tabId, { type: "LANTERN_LEVEL", source: msg.source, level: msg.level }).catch(() => {});
+    return false;
+  }
   if (!msg?.type?.startsWith("LANTERN_")) return false;
   onMessage(msg, sender).then(reply, (err) => {
     console.error("[Lantern:sw]", msg.type, err);
