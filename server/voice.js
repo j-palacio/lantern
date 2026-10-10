@@ -61,6 +61,10 @@ export async function transcribe(audio, mime) {
 const cache = new Map();
 const CACHE_MAX = 50;
 
+// Per-language voice: ELEVENLABS_VOICE_ID_ES for Spanish, etc. Falls back to ELEVENLABS_VOICE_ID.
+const voiceFor = (lang) =>
+  (lang && process.env[`ELEVENLABS_VOICE_ID_${lang.toUpperCase()}`]) || process.env.ELEVENLABS_VOICE_ID;
+
 /**
  * @param {string} text
  * @param {string} lang  ISO 639-1
@@ -68,12 +72,13 @@ const CACHE_MAX = 50;
  */
 export async function speak(text, lang) {
   if (!text) return { error: "empty_text" };
-  if (!process.env.ELEVENLABS_API_KEY || !process.env.ELEVENLABS_VOICE_ID) {
+  const voice = voiceFor(lang);
+  if (!process.env.ELEVENLABS_API_KEY || !voice) {
     // The offscreen document falls back to the browser's built-in voice on any error.
     return { error: "no_elevenlabs_key" };
   }
   const model = TTS_MODEL();
-  const key = `${model}|${process.env.ELEVENLABS_VOICE_ID}|${lang}|${text}`;
+  const key = `${model}|${voice}|${lang}|${text}`;
   if (cache.has(key)) return { audio: cache.get(key) };
 
   const body = { text, model_id: model };
@@ -82,7 +87,7 @@ export async function speak(text, lang) {
   const started = Date.now();
   try {
     const res = await fetch(
-      `${BASE()}/v1/text-to-speech/${encodeURIComponent(process.env.ELEVENLABS_VOICE_ID)}?output_format=mp3_44100_64`,
+      `${BASE()}/v1/text-to-speech/${encodeURIComponent(voice)}?output_format=mp3_44100_64`,
       {
         method: "POST",
         headers: {
