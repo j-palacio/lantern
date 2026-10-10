@@ -4,10 +4,9 @@ Lantern is a Chrome extension (Manifest V3) plus a small Node backend. It guides
 
 ## Read first
 
-1. `README.md` - what Lantern is and how we're building it.
+1. `README.md` - what Lantern is and how to run it.
 2. `docs/ARCHITECTURE.md` - components and exact data contracts. Treat the contracts section as law.
-3. `docs/MILESTONES.md` - the milestone you are working on. Do only that milestone.
-4. `notes/PROGRESS.md` (local only, gitignored) - build log and known issues, if it exists.
+3. `notes/` (local only, gitignored; may not exist in a fresh clone): `PROGRESS.md` (build log, known issues) and `milestones/` (the milestone you are working on; do only that one).
 
 ## Working rules
 
@@ -15,7 +14,7 @@ Lantern is a Chrome extension (Manifest V3) plus a small Node backend. It guides
 - Never run git commands (no add/commit/push/branch). Suggest a commit message instead.
 - Lantern never clicks, types, or enters passwords for the user. Never add code that does.
 - Secrets (`GEMINI_API_KEY`, `ELEVENLABS_API_KEY`) live only in `server/.env`. Never print, log, commit, or put them in the extension.
-- Keep it demo-first: the demo flow in README.md must keep working after every change.
+- Keep it demo-first: the demo must keep working after every change.
 - When a milestone is done, update this file (if anything here changed) and `notes/PROGRESS.md`.
 
 ## Environment facts
