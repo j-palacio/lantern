@@ -124,11 +124,11 @@ async function runTurn(tabId) {
   if (res.done) {
     await clearSession(tabId);
     sendToTab(tabId, { type: "LANTERN_DONE", say: res.say });
-    return speak(res.say, s.lang);
+    return speak(res.say, s.lang, tabId);
   }
   s.lastStep = { say: res.say, highlight: res.highlight };
   s.status = "awaiting_action";
   await saveSession(tabId, s);
   sendToTab(tabId, { type: "LANTERN_STEP", turn: s.turn, step: { say: res.say, highlight: res.highlight, scam: res.scam } });
-  speak(res.say, s.lang);
+  speak(res.say, s.lang, tabId);
 }
