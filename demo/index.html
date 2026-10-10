@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sunrise Power - My Account</title>
+<style>
+  body { margin: 0; font: 17px/1.5 system-ui, sans-serif; color: #222; background: #f4f6f8; }
+  header { background: #0b5394; color: #fff; padding: 14px 24px; display: flex; gap: 24px; align-items: center; }
+  header nav a { color: #fff; margin-right: 16px; }
+  main { max-width: 760px; margin: 32px auto; padding: 0 16px; }
+  .card { background: #fff; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  button { font: inherit; padding: 10px 18px; border-radius: 8px; border: 1px solid #0b5394; background: #fff; cursor: pointer; }
+  button.primary { background: #0b5394; color: #fff; }
+  #pay { display: none; }
+  label { display: block; margin-top: 12px; }
+  input { font: inherit; padding: 8px; width: 100%; box-sizing: border-box; }
+</style>
+</head>
+<body>
+  <header>
+    <strong>Sunrise Power</strong>
+    <nav><a href="#">Home</a><a href="#">Outages</a><a href="#">Usage</a><a href="#">Help</a></nav>
+  </header>
+  <main>
+    <div class="card">
+      <h2>Hello, Maria</h2>
+      <p>Your balance: <strong>$84.12</strong>, due October 20.</p>
+      <button>View usage</button>
+      <button>Paperless billing</button>
+      <button class="primary" id="payBtn">Pay bill</button>
+    </div>
+    <div class="card" id="pay">
+      <h3>Pay your bill</h3>
+      <label>Amount <input value="84.12"></label>
+      <label>Card number <input placeholder="1234 5678 9012 3456"></label>
+      <p><button class="primary" id="submit">Submit payment</button></p>
+    </div>
+    <div class="card" id="thanks" style="display:none"><h3>Thank you! Your payment was received.</h3></div>
+  </main>
+  <script>
+    payBtn.onclick = () => { pay.style.display = "block"; };
+    submit.onclick = () => { pay.style.display = "none"; thanks.style.display = "block"; };
+  </script>
+</body>
+</html>
