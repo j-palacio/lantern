@@ -66,6 +66,10 @@ const line = (table, lang) => table[lang] || table.en;
 
 const badHighlight = (out, ids) => out.highlight !== null && !ids.has(out.highlight);
 
+// "Click the search bar." and "click the Search bar" count as the same instruction.
+const words = (s) => String(s || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+const sameWords = (a, b) => words(a) !== "" && words(a) === words(b);
+
 // One Gemini call, plus one retry if the answer is not JSON or points at an id that is not in the list.
 async function askGemini(req, flags, ids, floor) {
   const deadline = Date.now() + BUDGET_MS;
@@ -73,9 +77,12 @@ async function askGemini(req, flags, ids, floor) {
   let out = parseStep(answer);
 
   let note = null;
+  const last = req.history?.at(-1);
   if (!out) note = "That was not valid JSON. Answer with the JSON object only.";
   else if (!out.done && badHighlight(out, ids) && out.scam.risk !== "high" && floor !== "high") {
     note = `Element ${out.highlight} does not exist. Pick from the list.`;
+  } else if (!out.done && last?.outcome === "completed" && sameWords(out.say, last.say)) {
+    note = `The user already did "${last.say}". Do not repeat it; give the step after it.`;
   }
 
   if (note && deadline - Date.now() >= MIN_RETRY_MS) {
