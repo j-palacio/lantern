@@ -29,14 +29,22 @@ Each step: the extension numbers every button, link and field on the page and se
 
 ## Run it
 
-Coming during Knight Hacks. Requirements: Node, Google Chrome, a Gemini API key and an ElevenLabs API key.
+Requirements: Node 20.12+, Google Chrome, a Gemini API key and an ElevenLabs API key (both optional for a first try: without them Lantern uses mock steps and the browser's built-in voice).
+
+1. **Keys.** Copy `server/.env.example` to `server/.env` and fill in `GEMINI_API_KEY`, `ELEVENLABS_API_KEY` and `ELEVENLABS_VOICE_ID`. `.env` is gitignored; never commit it.
+2. **Backend.** `cd server && npm run dev`. The startup line says which parts are real and which are mocked.
+3. **Extension.** In Chrome open `chrome://extensions`, turn on Developer mode, click **Load unpacked** and pick the `extension/` folder. A welcome tab opens: click **Allow microphone** once.
+4. **Try it.** Open `http://localhost:8787/demo/`, click the round Lantern button (bottom right) or press **Alt+L**, and say or type "pay my bill".
+
+Check the backend with `cd server && npm run smoke` while it is running.
 
 ## Repository
 
 ```
-extension/   Chrome extension (Manifest V3)
-server/      Node backend: Gemini decisions, scam check, ElevenLabs voice
-docs/        ARCHITECTURE.md (design + contracts)
+extension/   Chrome extension (Manifest V3, plain JS, no build step)
+server/      Node backend: Gemini decisions, scam check, ElevenLabs voice (zero dependencies)
+demo/        Demo pages, served at http://localhost:8787/demo/
+docs/        ARCHITECTURE.md (design + contracts), MILESTONES.md (who builds what)
 ```
 
 ## Built with
