@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Lantern",
+  "version": "0.1.0",
+  "description": "A patient guide for the web, in your language. Shows where to click, says it out loud, warns about scams.",
+  "background": { "service_worker": "background.js", "type": "module" },
+  "permissions": ["storage", "offscreen", "tabs"],
+  "host_permissions": ["<all_urls>", "http://localhost:8787/*"],
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*", "file:///*"],
+      "js": [
+        "content/config.js",
+        "content/scanner.js",
+        "content/overlay.js",
+        "content/watcher.js",
+        "content/widget.js",
+        "content/main.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "commands": {
+    "toggle-voice": {
+      "suggested_key": { "default": "Alt+L" },
+      "description": "Start or stop talking to Lantern"
+    }
+  }
+}
