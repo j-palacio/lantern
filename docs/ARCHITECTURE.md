@@ -1,6 +1,6 @@
 # Architecture
 
-Status: draft. Gets finalized after the grilling session (see GRILL.md).
+How Lantern works and the exact data contracts between its parts. Contracts in section 3 are binding: code on both sides of an HTTP call follows them exactly.
 
 ## 1. Components
 
@@ -52,7 +52,7 @@ Response (backend → extension):
 - `highlight` is an element `id` from the request, or `null`.
 - `scam.risk` is `"low" | "medium" | "high"`. On `"high"`, the extension speaks the warning before anything else.
 
-### Open questions (settle during grilling)
+### Open questions
 
 - STT/TTS endpoints: does the backend proxy ElevenLabs, or does the extension call it with a short-lived token?
 - Do we send a screenshot (Set-of-Marks, like Pointr) or text only?
