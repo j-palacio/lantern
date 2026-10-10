@@ -20,6 +20,9 @@
     },
     LANTERN_SHOW_UI() { L.showUI(); },
     LANTERN_STATUS({ status, text }) { L.widget.status(status, text); },
+    // ~20/s while the user talks or Lantern speaks. Milestone 3 adds content/visualizer.js,
+    // which defines L.visualizer = { update(source, level) } and draws the orb.
+    LANTERN_LEVEL({ source, level }) { L.visualizer?.update(source, level); },
     LANTERN_STEP({ turn, step }) {
       const el = step.highlight != null ? L.elementById(step.highlight) : null;
       L.overlay.show(el, step.say, step.scam);

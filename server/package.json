@@ -4,10 +4,13 @@
   "private": true,
   "type": "module",
   "description": "Lantern backend: Gemini decisions, scam check, ElevenLabs voice",
-  "engines": { "node": ">=20.12" },
+  "engines": {
+    "node": ">=20.12"
+  },
   "scripts": {
     "dev": "node --watch server.js",
     "start": "node server.js",
-    "smoke": "node scripts/smoke.js"
+    "smoke": "node scripts/smoke.js",
+    "test:voice": "node scripts/voice-test.js"
   }
 }

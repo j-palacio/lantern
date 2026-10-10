@@ -16,7 +16,7 @@ async function ensureOffscreen() {
 export async function toggleVoice(tabId) {
   await ensureOffscreen();
   if (recordingTab == null) {
-    const r = await chrome.runtime.sendMessage({ type: "OFFSCREEN_RECORD_START" });
+    const r = await chrome.runtime.sendMessage({ type: "OFFSCREEN_RECORD_START", tabId });
     if (!r?.ok) {
       if (r?.error === "NotAllowedError") chrome.tabs.create({ url: chrome.runtime.getURL("welcome/welcome.html") });
       return sendToTab(tabId, { type: "LANTERN_STATUS", status: "error", text: "Please allow the microphone in the new tab." });
@@ -34,8 +34,8 @@ export async function toggleVoice(tabId) {
   await startGoal(tab, r.text, r.lang || "en");
 }
 
-export async function speak(text, lang) {
+export async function speak(text, lang, tabId) {
   if (!text) return;
   await ensureOffscreen();
-  chrome.runtime.sendMessage({ type: "OFFSCREEN_SPEAK", text, lang }).catch(() => {});
+  chrome.runtime.sendMessage({ type: "OFFSCREEN_SPEAK", text, lang, tabId }).catch(() => {});
 }

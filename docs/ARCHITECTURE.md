@@ -175,9 +175,11 @@ Response: `audio/mpeg` bytes, or JSON `{ "error": "..." }` with HTTP 502.
 | `LANTERN_STATUS` | SW -> content | `{status, text}` (listening, thinking, error) | - |
 | `LANTERN_STEP` | SW -> content | `{turn, step: {say, highlight, scam}}` | - |
 | `LANTERN_DONE` | SW -> content | `{say}` | - |
-| `OFFSCREEN_RECORD_START` | SW -> offscreen | `{}` | `{ok}` |
+| `LANTERN_LEVEL` | SW -> content | `{source: "user" \| "lantern", level: 0..1}` (~20/s while someone is talking; a final `0` when they stop) | - |
+| `OFFSCREEN_RECORD_START` | SW -> offscreen | `{tabId}` | `{ok}` |
 | `OFFSCREEN_RECORD_STOP` | SW -> offscreen | `{}` | `{text, lang}` or `{error}` |
-| `OFFSCREEN_SPEAK` | SW -> offscreen | `{text, lang}` | `{ok}` |
+| `OFFSCREEN_SPEAK` | SW -> offscreen | `{text, lang, tabId}` | `{ok}` |
+| `OFFSCREEN_LEVEL` | offscreen -> SW | `{tabId, source, level}` (SW forwards it to the tab as `LANTERN_LEVEL`) | - |
 
 ## 7. Scanner rules (`content/scanner.js`)
 
@@ -230,3 +232,6 @@ Runs inside every `/decide` call.
 3. Every step's `say` (and scam warnings) goes to `OFFSCREEN_SPEAK` -> `/speak` -> plays the MP3. A new step stops any audio still playing.
 4. Mic permission: on install, `welcome/welcome.html` asks for the mic once.
 5. Typing a goal in the widget also works (lang defaults to the browser language).
+6. Models (overridable in `server/.env`): speech-to-text `scribe_v2`; text-to-speech `eleven_flash_v2_5` (~75 ms, 32 languages incl. Spanish) with `language_code` set to the user's language. ElevenLabs language codes are normalised to ISO 639-1 (`spa` -> `es`). The backend caches the last 50 spoken lines.
+7. Levels for the visualizer: the offscreen document meters the mic while recording and Lantern's audio while it plays (Web Audio `AnalyserNode`, RMS scaled to 0..1, every 50 ms) and sends `OFFSCREEN_LEVEL`; the SW forwards it to the tab as `LANTERN_LEVEL`. The content script calls `L.visualizer?.update(source, level)`. With the browser-voice fallback, a gentle fake level is sent while it speaks.
+8. Fallback: no ElevenLabs key, no voice id, or a failed call -> the browser's built-in voice, so the demo always talks.
