@@ -1,101 +1,48 @@
-# Lantern — Knight Hacks IX
+# Lantern
 
-A voice-first Chrome extension that guides older adults and non-English speakers through websites, step by step, in their own language, and warns them about scams before they pay.
+**A patient guide for the web, in your language.** Tell Lantern one goal out loud ("quiero pagar mi factura de luz"), and it shows you where to click, one step at a time, on the real website: the right button lights up and Lantern tells you what to do, out loud, in the language you spoke. You do the clicking; Lantern looks again after every action until the goal is done. If the page looks like a scam, it warns you before you pay.
 
-## The problem
-
-Everyday tasks like paying a bill, booking an appointment or filling out a form now happen online. Many older adults and non-English speakers get stuck on confusing sites, and they're also the main targets for online scams.
+Built at Knight Hacks IX for people who find websites hard to use and are the main targets of online scams: older adults, non-English speakers, anyone who freezes at a screen full of buttons.
 
 ## What it does
 
 - **Talk to it in your language.** Ask in English, Spanish or another language, and it answers out loud in the same language.
-- **Shows you where to click.** It highlights the exact button for the next step and walks you through the task one step at a time.
-- **Stops scams.** If a page shows red flags, like "pay with gift cards", urgent threats or a fake domain, it warns you before you pay.
+- **One goal, step by step.** Lantern plans a single next step from what is on the screen right now and highlights the exact button for it.
+- **Stops scams.** If a page shows red flags, like "pay with gift cards", urgent threats or a fake domain, it warns you out loud before you pay.
 - **You stay in control.** It never clicks, types or enters passwords for you.
 
-## Architecture
+## How it works
 
 ```
-[Widget on the page]  click / speak
-        ↓
-[Mic capture]  (extension's own page, for mic permission)
-        ↓ audio
-[ElevenLabs STT]  →  "Quiero pagar mi factura"
-        ↓
-[Content script]  reads page → numbered buttons/links
-        ↓ text + buttons + page text
-[Node backend → Gemini]  picks next step + scam check
-        ↓
-[Overlay]  highlights button   [ElevenLabs TTS]  speaks reply
-              ↘            ↙
-         [Visualizer]  reacts to both voices
+ Chrome                                             Backend
++--------------------------------------+          +-----------------------------------+
+| Content script (every page)          |          | server/  (Node)                   |
+|  scanner -> numbered element list    |          |   POST /decide -> Gemini          |
+|  overlay -> highlight the next step  |   HTTP   |     next step + scam check        |
+|  widget  -> talk button, visualizer  | <------> |   speech-to-text -> ElevenLabs    |
+| Service worker: step loop            |          |   text-to-speech -> ElevenLabs    |
+| Offscreen document: mic              |          |                                   |
++--------------------------------------+          +-----------------------------------+
 ```
 
-The full contracts live in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Short version:
+Each step: the extension numbers every button, link and field on the page and sends the list, the page text, the user's goal and their language to the backend. Gemini answers with ONE element number, a short instruction and a scam rating; the extension highlights that element and ElevenLabs speaks the instruction. Details and contracts: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-Extension → backend:
+## Run it
 
-```json
-{
-  "goal": "pay my electric bill",
-  "lang": "es",
-  "url": "https://example.com/billing",
-  "elements": [{ "id": 7, "text": "Pay now" }],
-  "pageText": "..."
-}
+Coming during Knight Hacks. Requirements: Node, Google Chrome, a Gemini API key and an ElevenLabs API key.
+
+## Repository
+
+```
+extension/   Chrome extension (Manifest V3)
+server/      Node backend: Gemini decisions, scam check, ElevenLabs voice
+docs/        ARCHITECTURE.md (design + contracts)
 ```
 
-Backend → extension:
+## Built with
 
-```json
-{
-  "say": "Haz clic en Pagar ahora",
-  "highlight": 7,
-  "scam": { "risk": "low", "reason": "" },
-  "done": false
-}
-```
+Chrome Extensions (Manifest V3), Google Gemini API, ElevenLabs, Node.js.
 
-## Tech stack
+## Inspiration
 
-| Part | Choice |
-|---|---|
-| Extension | Chrome Manifest V3, JS/TS |
-| Page reading | Numbered clickable elements from the page + screenshot |
-| Backend | Node.js |
-| LLM | Gemini (Flash) with strict JSON output |
-| Voice | ElevenLabs speech-to-text and text-to-speech |
-| Scam check | Gemini on page text/URL + red-flag rules |
-| Visualizer | Web Audio API + canvas |
-
-## Team
-
-| Area | Owner |
-|---|---|
-| Voice pipeline (mic, STT, TTS, languages), latency, visualizer | J |
-| Node backend + Gemini next-step logic | TBD |
-| Content script, highlighting, overlay/widget | TBD |
-| Scam check, demo pages, Devpost, backup video | TBD |
-
-## How we're building it
-
-We're following the workflow the Pointr team used to win ShellHacks:
-
-1. **Plan by hand first (~2-3 h).** Sketch the flow on paper and write notes in [`docs/NOTES.md`](docs/NOTES.md), in our own words, before asking AI for anything.
-2. **Get grilled (~1-2 h).** Hand the notes to Claude Code with the [grill-me skill](https://github.com/mattpocock/skills) and let it attack our assumptions. See [`docs/GRILL.md`](docs/GRILL.md).
-3. **Write milestones.** Turn the grilling into ~6 milestones, each with implementation details and a test, in [`docs/MILESTONES.md`](docs/MILESTONES.md).
-4. **Build one milestone per clean session.** Each milestone goes to a fresh Claude Code session. When it's done, update `CLAUDE.md` and `notes/PROGRESS.md`.
-5. **Sleep.** Pointr finished in under 12 hours of work.
-
-## Demo flow
-
-1. User says "Quiero pagar mi factura de luz."
-2. The assistant answers in Spanish and highlights the right button.
-3. The user clicks a fake scam link, and the assistant warns them out loud before they pay.
-
-## Inspiration and references
-
-- **Pointr** (ShellHacks 2026, 1st place) — [Devpost](https://devpost.com/software/pointr-0ce2gh) · [GitHub](https://github.com/edwin-luu/pointr). Web-guide overlay with Set-of-Marks prompting. Their `CLAUDE.md` and `docs/ARCHITECTURE.md` are a good model for ours.
-- **Accent** (LA Hacks 2026, Light The Way track) — [Devpost](https://devpost.com/software/accent-cdw2qi) · [GitHub](https://github.com/RyloRiz/accent). macOS assistant with ElevenLabs voice in/out and Gemini intent resolution.
-
-We read these for ideas only. All code in this repo was written during Knight Hacks.
+[Pointr](https://github.com/edwin-luu/pointr) ([Devpost](https://devpost.com/software/pointr-0ce2gh), 1st place at ShellHacks 2026) and [Accent](https://github.com/RyloRiz/accent) ([Devpost](https://devpost.com/software/accent-cdw2qi), LA Hacks 2026). All code in this repo was written during Knight Hacks.
