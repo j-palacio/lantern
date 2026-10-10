@@ -15,6 +15,10 @@ const TIP = 13; // arrowhead stops this far short of the ring
 type Box = { l: number; t: number; w: number; h: number };
 type Side = "below" | "above" | "right" | "left";
 
+// Caption placement preference: under the target reads best and keeps the row of buttons
+// beside it clear. The sides are only tried when neither below nor above fits on screen.
+const ORDER: Side[] = ["below", "above", "right", "left"];
+
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(v, hi));
 
 function overlaps(a: Box, b: Box, slack = 10): boolean {
@@ -109,17 +113,13 @@ export function Overlay({ step }: { step: Step | null }) {
         h: Math.min(innerHeight, r.bottom) - Math.max(0, r.top),
       };
       const onScreen = box.w > 0 && box.h > 0;
-      const room: Record<Side, number> = {
-        below: innerHeight - (box.t + box.h),
-        above: box.t,
-        right: innerWidth - (box.l + box.w),
-        left: box.l,
-      };
-      const order = (["below", "above", "right", "left"] as Side[]).sort((a, b) => room[b] - room[a]);
 
+      // Under the target first, then above it. Beside it is a last resort: on a row of
+      // buttons - "View usage | Paperless billing | Pay bill" - the side with the most room
+      // is the one lying straight over the neighbours the user is NOT meant to click.
       let pos: Box | null = null;
       let side: Side = "below";
-      for (const s of order) {
+      for (const s of ORDER) {
         pos = candidate(s, box, size.w, size.h);
         if (pos) {
           side = s;
