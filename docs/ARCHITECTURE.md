@@ -222,7 +222,7 @@ Runs inside every `/decide` call.
    - lookalike domain (brand name in the page but a different registered domain, extra words like `-secure-pay`, digits for letters)
    - card or password field on a page that is not `https`
 2. **Gemini** gets the page plus `flags[]` and returns `scam.risk` and `scam.reason` in the user's language.
-3. Two or more rule flags force `risk >= "medium"`; a gift-card or crypto payment request forces `"high"`.
+3. Two or more rule flags force `risk >= "medium"`, and so does a gift-card or crypto payment request on its own (a request to pay with them, not a mention like a "Gift Cards" link). That request together with an urgent threat or a lookalike domain forces `"high"`.
 
 ## 12. Voice pipeline
 
