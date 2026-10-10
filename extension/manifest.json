@@ -12,9 +12,8 @@
       "js": [
         "content/config.js",
         "content/scanner.js",
-        "content/overlay.js",
         "content/watcher.js",
-        "content/widget.js",
+        "dist/content.js",
         "content/main.js"
       ],
       "run_at": "document_idle"

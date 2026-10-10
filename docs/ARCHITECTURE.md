@@ -10,7 +10,7 @@ A user who is unsure how to use a website presses the Lantern button (bottom-rig
 
 | # | Decision | Why |
 |---|----------|-----|
-| D1 | Chrome extension, Manifest V3, plain JS, no build step | Reads the DOM so highlights are pixel-exact; edit, reload in `chrome://extensions`. |
+| D1 | Chrome extension, Manifest V3. Page logic is plain JS with no build step; the in-page UI is React + TypeScript + Tailwind + Framer Motion in `ui/`, built by Vite into one content script (`extension/dist/content.js`) | Reads the DOM so highlights are pixel-exact. What touches the page stays editable with a plain reload; the UI gets a component model and real motion design. After a UI edit: `cd ui && npm run build`, then reload in `chrome://extensions`. |
 | D2 | Small local backend, Node 20+, plain JS, `node:http`, zero dependencies | Keeps every API key off the client, one place to swap models and prompts. |
 | D3 | Gemini for decisions, strict JSON output. Model set in `server/.env` (`GEMINI_MODEL`) | Fast, multimodal, multilingual. |
 | D4 | ElevenLabs for both speech-to-text and text-to-speech, **always called by the backend** (`/transcribe`, `/speak`) | The extension never holds a key. STT also returns the spoken language, so there is no language picker. |
@@ -30,12 +30,12 @@ Out of scope this weekend: wake word, iframes, acting on the user's behalf.
 ```
 +----------------------------- Chrome ------------------------------------+
 |  CONTENT SCRIPT (every page, UI in closed Shadow DOM on <lantern-root>) |
-|   config.js   tunables                                                  |
-|   scanner.js  visible interactive elements -> ElementInfo[]             |
-|   overlay.js  highlight ring + caption                                  |
-|   watcher.js  detects the user's action -> Outcome                      |
-|   widget.js   round button, status, mic state, Stop                     |
-|   main.js     message wiring (LAST in the manifest list)                |
+|  config.js        tunables                                              |
+|  scanner.js       visible interactive elements -> ElementInfo[]         |
+|  watcher.js       detects the user's action -> Outcome                  |
+|  dist/content.js  React UI built from ui/: command bar, voice orb,      |
+|                   highlight ring, connector, caption                    |
+|  main.js          message wiring (LAST in the manifest list)            |
 |                  ^            |  chrome.runtime messages (6.3)           |
 |                  |            v                                          |
 |  SERVICE WORKER background.js (ES module)                               |
@@ -61,7 +61,8 @@ Out of scope this weekend: wake word, iframes, acting on the user's behalf.
 ## 4. Repository layout
 
 ```
-extension/   Chrome extension (Manifest V3, plain JS, no build step)
+extension/   Chrome extension (Manifest V3). content/ and sw/ are plain JS; dist/ is built
+ui/          The in-page UI: React + TypeScript + Tailwind + Framer Motion (Vite build)
 server/      Node backend (plain JS, zero dependencies)
 demo/        Demo pages, including a fake scam bill-pay page
 docs/        ARCHITECTURE.md (this file), MILESTONES.md (who builds what)
@@ -95,10 +96,11 @@ Rules:
 - The screenshot is taken while Lantern's UI is hidden, so the model never sees our own widget.
 - Every turn-scoped message carries `turn`. The SW ignores a `LANTERN_STEP_RESULT`/`LANTERN_READY` whose `turn` does not match.
 - `LANTERN_HELLO` while `awaiting_action` -> record `page_changed` and run the next turn; while `settling`, `observing` or `thinking` -> run the turn again on the new page.
-- `LANTERN_STOP` clears the session from any state.
+- `LANTERN_STOP` clears the session from any state. A session older than 10 minutes is dropped on the next `LANTERN_HELLO` instead of being resumed, so a forgotten goal never wakes up on an unrelated page.
 - Errors (backend down, timeout): `LANTERN_STATUS {status: "error", text}`; the widget shows the message in red.
 - Max 30 turns, then stop with a friendly message.
 - `captureVisibleTab` is rate-limited to 2 calls/s: never call it twice within 600 ms.
+- `captureVisibleTab` always grabs the window's active tab, so a turn that starts (or reaches the screenshot) while the guided tab is in the background is parked: the session goes to `status: "paused"` and `chrome.tabs.onActivated` runs the turn again from the top. Parking in the session, not in memory, means a paused turn survives the service worker shutting down.
 
 ## 6. Contracts (binding)
 
@@ -195,7 +197,7 @@ Response: `audio/mpeg` bytes, or JSON `{ "error": "..." }` with HTTP 502.
 2. Draw it on an `OffscreenCanvas` scaled to max width 1280; for each element a 2 px box and a numbered tag in the box's color.
 3. Encode JPEG quality 0.8 -> base64 without prefix.
 
-## 9. Overlay (`content/overlay.js`)
+## 9. Overlay (`ui/src/Overlay.tsx`)
 
 A thick ring around the target, the rest of the page lightly dimmed, and a caption with the spoken text. On `scam.risk == "high"` the caption turns red and shows the warning. The overlay follows the target on scroll and resize.
 

@@ -1,5 +1,5 @@
 // Lantern service worker entry. docs/ARCHITECTURE.md sections 3 and 5.
-import { onMessage, onTabRemoved } from "./sw/loop.js";
+import { onMessage, onTabRemoved, onTabActivated } from "./sw/loop.js";
 import { toggleVoice } from "./sw/voice.js";
 
 chrome.runtime.onMessage.addListener((msg, sender, reply) => {
@@ -21,6 +21,9 @@ chrome.commands.onCommand.addListener(async (command, tab) => {
 });
 
 chrome.tabs.onRemoved.addListener(onTabRemoved);
+
+// A turn parked while the tab was in the background picks up here (Milestone 3).
+chrome.tabs.onActivated.addListener(onTabActivated);
 
 chrome.runtime.onInstalled.addListener(({ reason }) => {
   if (reason === "install") chrome.tabs.create({ url: chrome.runtime.getURL("welcome/welcome.html") });

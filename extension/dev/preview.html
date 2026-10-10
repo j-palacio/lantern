@@ -1,0 +1,171 @@
+<!doctype html>
+<!-- Dev-only harness for Milestone 3. Loads the real content scripts with a fake chrome.runtime
+     so every widget state, the orb and the overlay can be driven by hand - no extension, no
+     server, no backend keys. Open this file directly in Chrome (file:///...). Not in the
+     manifest, so it never ships. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lantern UI preview</title>
+<style>
+  body { margin: 0; font: 17px/1.5 system-ui, sans-serif; color: #222; background: #f4f6f8; }
+  header { position: sticky; top: 0; background: #0b5394; color: #fff; padding: 14px 24px; display: flex; gap: 20px; align-items: center; z-index: 5; }
+  header a { color: #fff; }
+  main { max-width: 760px; margin: 24px auto 420px; padding: 0 16px; }
+  .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 18px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  button { font: inherit; padding: 9px 16px; border-radius: 8px; border: 1px solid #0b5394; background: #fff; cursor: pointer; }
+  button.primary { background: #0b5394; color: #fff; }
+  input { font: inherit; padding: 8px; width: 100%; box-sizing: border-box; }
+  .crowd { display: flex; gap: 4px; flex-wrap: wrap; }
+  .crowd button { padding: 6px 8px; font-size: 14px; }
+  /* the harness panel, deliberately plain so it is never mistaken for Lantern's UI */
+  .dev { position: fixed; left: 0; bottom: 0; width: 100%; background: #11151c; color: #e7ebf0; padding: 12px 16px; font: 14px/1.5 ui-monospace, monospace; z-index: 10; }
+  .dev h4 { margin: 0 0 6px; font: 600 13px system-ui; letter-spacing: .08em; text-transform: uppercase; color: #8d97a4; }
+  .dev .grp { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
+  .dev button { background: #222a36; color: #e7ebf0; border: 1px solid #3a4553; padding: 5px 10px; font: inherit; border-radius: 6px; }
+  .dev button.on { background: #ffb703; color: #11151c; border-color: #ffb703; }
+  .dev label { color: #8d97a4; }
+</style>
+</head>
+<body>
+  <header><strong>Sunrise Power</strong><a href="#">Outages</a><a href="#">Usage</a><a href="#">Help</a></header>
+  <main>
+    <div class="card">
+      <h2>Hello, Maria</h2>
+      <p>Your balance: <strong>$84.12</strong>, due October 20.</p>
+      <button id="t1">View usage</button>
+      <button id="t2">Paperless billing</button>
+      <button class="primary" id="t3">Pay bill</button>
+    </div>
+    <div class="card">
+      <h3>Pay your bill</h3>
+      <label>Card number <input id="t4" placeholder="1234 5678 9012 3456"></label>
+      <p><button class="primary" id="t5">Submit payment</button></p>
+    </div>
+    <div class="card">
+      <h3>Crowded row (caption + arrow placement)</h3>
+      <div class="crowd">
+        <button>1</button><button>2</button><button>3</button><button>4</button><button>5</button>
+        <button>6</button><button>7</button><button id="t6">8</button><button>9</button><button>10</button>
+      </div>
+    </div>
+    <div class="card"><h3>Bottom of the page</h3><button id="t7">Target near the bottom edge</button></div>
+  </main>
+
+  <div class="dev">
+    <h4>Widget state</h4>
+    <div class="grp" id="states"></div>
+    <h4>Voice orb (fake LANTERN_LEVEL, 20/s)</h4>
+    <div class="grp">
+      <button data-talk="user">user talking</button>
+      <button data-talk="lantern">Lantern talking</button>
+      <button data-talk="">silence</button>
+      <label>manual level <input type="range" id="lvl" min="0" max="100" value="0" style="width:160px"></label>
+    </div>
+    <h4>Overlay (ring + arrow + caption)</h4>
+    <div class="grp" id="targets"></div>
+  </div>
+
+<script>
+  // Minimal chrome.runtime so the real content scripts load unchanged.
+  globalThis.chrome = {
+    runtime: {
+      sendMessage: async (m) => { console.log("[preview] sendMessage", m); return { ok: true }; },
+      onMessage: { addListener() {} },
+      getURL: (p) => p,
+    },
+  };
+</script>
+<script src="../content/config.js"></script>
+<script src="../content/scanner.js"></script>
+<!-- The real React UI bundle, exactly as the extension loads it. Rebuild with: cd ui && npm run build -->
+<script src="../dist/content.js"></script>
+<script>
+  const L = globalThis.Lantern;
+  const SAY = {
+    idle: "", listening: "", thinking: "",
+    guiding: "Haz clic en “Pagar factura” para empezar.",
+    done: "¡Listo! Tu pago fue recibido.",
+    error: "I can't reach Lantern's helper server.",
+  };
+
+  // --- widget states ---
+  const states = ["idle", "listening", "thinking", "guiding", "done", "error"];
+  const statesEl = document.getElementById("states");
+  let turn = 1;
+  states.forEach((s) => {
+    const b = document.createElement("button");
+    b.textContent = s;
+    b.onclick = () => {
+      // "guiding" carries a turn number so the task panel can show "Step N".
+      if (s === "guiding") L.widget.status(s, SAY[s], ++turn);
+      else L.widget.status(s, SAY[s] || undefined);
+      mark(statesEl, b);
+    };
+    statesEl.appendChild(b);
+  });
+  // The task panel only appears once there is a goal to show. (For tier 1, the quiet
+  // launcher, press the x in Lantern's own panel.)
+  const goalBtn = document.createElement("button");
+  goalBtn.textContent = "set a goal (task panel)";
+  goalBtn.onclick = () => { L.widget.guiding("pay my electric bill"); mark(statesEl, goalBtn); };
+  statesEl.appendChild(goalBtn);
+
+  // --- orb levels ---
+  let timer = null, phase = 0;
+  function talk(source) {
+    clearInterval(timer);
+    if (!source) { L.visualizer.update(null, 0); timer = null; return; }
+    timer = setInterval(() => {
+      phase += 0.05;
+      const env = Math.max(0, Math.sin(phase * 2.1) * 0.5 + 0.5) * (0.45 + 0.55 * Math.random());
+      L.visualizer.update(source, env);
+    }, 50); // the real rate: LANTERN_LEVEL arrives every 50 ms
+  }
+  document.querySelectorAll("[data-talk]").forEach((b) => {
+    b.onclick = () => { talk(b.dataset.talk); mark(b.parentElement, b); L.widget.open(); };
+  });
+  document.getElementById("lvl").oninput = (e) => {
+    clearInterval(timer); timer = null;
+    L.visualizer.update("user", e.target.value / 100);
+  };
+
+  // --- overlay ---
+  const targets = [
+    ["Pay bill", "t3", { risk: "low", reason: "" }],
+    ["Card field", "t4", { risk: "low", reason: "" }],
+    ["Submit payment", "t5", { risk: "low", reason: "" }],
+    ["Crowded #8", "t6", { risk: "low", reason: "" }],
+    ["Bottom edge", "t7", { risk: "low", reason: "" }],
+    ["Sticky header link", null, { risk: "low", reason: "" }],
+    ["SCAM warning (no target)", null, { risk: "high", reason: "Esta página pide tarjetas de regalo." }],
+  ];
+  const tEl = document.getElementById("targets");
+  targets.forEach(([label, id, scam]) => {
+    const b = document.createElement("button");
+    b.textContent = label;
+    b.onclick = () => {
+      const el = id ? document.getElementById(id) : (label.startsWith("Sticky") ? document.querySelector("header a") : null);
+      const say = scam.risk === "high"
+        ? "Alto. Esta página parece una estafa. No pague ni escriba nada aquí."
+        : `Haz clic en “${label}”.`;
+      L.overlay.show(el, say, scam);
+      L.widget.status(scam.risk === "high" ? "error" : "guiding", say);
+      mark(tEl, b);
+    };
+    tEl.appendChild(b);
+  });
+  const clear = document.createElement("button");
+  clear.textContent = "clear overlay";
+  clear.onclick = () => { L.overlay.clear(); mark(tEl, clear); };
+  tEl.appendChild(clear);
+
+  function mark(group, btn) {
+    group.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b === btn));
+  }
+
+  L.widget.open();
+  console.log("[preview] drive it from the console too: Lantern.widget.status('listening'), Lantern.visualizer.update('user', 0.8), Lantern.overlay.show(document.getElementById('t3'), 'text', {risk:'low'})");
+</script>
+</body>
+</html>
