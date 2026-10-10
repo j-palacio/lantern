@@ -1,5 +1,5 @@
 // Step loop: observe -> think -> point -> wait. docs/ARCHITECTURE.md section 5.
-import { getSession, saveSession, clearSession, newSession } from "./session.js";
+import { getSession, saveSession, clearSession, newSession, isStale } from "./session.js";
 import { captureWithMarks } from "./marks.js";
 import { postDecide } from "./api.js";
 import { toggleVoice, speak } from "./voice.js";
@@ -51,6 +51,12 @@ export async function onMessage(msg, sender) {
 
     case "LANTERN_HELLO": // a page (re)loaded in this tab
       if (!s) return null;
+      if (isStale(s)) {
+        // An old goal must not follow the user onto an unrelated page (section 5).
+        console.log("[Lantern:sw] dropping a stale goal in tab", tabId);
+        await clearSession(tabId);
+        return null;
+      }
       if (s.status === "awaiting_action") {
         s.history.push({ turn: s.turn, say: s.lastStep?.say, highlight: s.lastStep?.highlight, outcome: "page_changed" });
         s.turn += 1;
@@ -69,6 +75,31 @@ export async function onTabRemoved(tabId) {
   await clearSession(tabId);
 }
 
+// A paused turn waits here, not in memory, so it also survives the service worker shutting down.
+export async function onTabActivated({ tabId }) {
+  const s = await getSession(tabId);
+  if (s?.status !== "paused") return;
+  if (isStale(s)) return clearSession(tabId);
+  runTurn(tabId);
+}
+
+/**
+ * captureVisibleTab always grabs the window's *active* tab, so running a turn while the guided
+ * tab is in the background would screenshot whatever the user switched to. Park the turn instead
+ * and let tabs.onActivated run it again from the top (section 5).
+ */
+async function parkIfBackground(tabId) {
+  const tab = await chrome.tabs.get(tabId).catch(() => null);
+  if (!tab) return null;
+  if (tab.active) return tab;
+  const s = await getSession(tabId);
+  if (!s) return null;
+  s.status = "paused";
+  await saveSession(tabId, s);
+  console.log("[Lantern:sw] tab", tabId, "is in the background: turn paused");
+  return null;
+}
+
 async function runTurn(tabId) {
   const token = Symbol();
   runs.set(tabId, token);
@@ -80,6 +111,10 @@ async function runTurn(tabId) {
     await clearSession(tabId);
     return sendToTab(tabId, { type: "LANTERN_STATUS", status: "error", text: "This is taking longer than expected. Let's start over." });
   }
+
+  let tab = await parkIfBackground(tabId);
+  if (!tab || stale()) return;
+
   s.status = "observing";
   await saveSession(tabId, s);
 
@@ -90,8 +125,9 @@ async function runTurn(tabId) {
   // 2. Screenshot with numbered boxes, then show the UI again.
   let screenshot = "";
   try {
-    const tab = await chrome.tabs.get(tabId);
-    // TODO(Milestone 3): if the tab is in the background, pause and resume on tabs.onActivated.
+    // The user can switch tabs while we are scanning: check again right before the capture.
+    tab = await parkIfBackground(tabId);
+    if (!tab) return;
     screenshot = await captureWithMarks(tab.windowId, scan.page, scan.elements);
   } catch (err) {
     console.warn("[Lantern:sw] screenshot failed, sending text only:", err.message);

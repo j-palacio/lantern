@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Injected into Lantern's closed shadow root, so none of this can leak into the page
+   and no page CSS can reach in (docs/ARCHITECTURE.md D10). */
+
+:host {
+  all: initial;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    font-family: theme("fontFamily.sans");
+  }
+  button {
+    appearance: none;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+  input {
+    appearance: none;
+    font: inherit;
+    color: inherit;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  :focus-visible {
+    outline: 2px solid var(--l-accent);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+  svg {
+    display: block;
+  }
+}
+
+/* Design tokens. --l-accent and --l-danger are overwritten at runtime from
+   content/config.js, which stays the single source of truth for the accent. */
+.lantern {
+  --l-accent: #ffb703;
+  --l-danger: #ff6b6e;
+  --l-panel: #101319;
+  --l-raised: #171b23;
+  --l-line: rgba(255, 255, 255, 0.08);
+  --l-text: #e9ebf0;
+  --l-muted: #8a91a0;
+  color: var(--l-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- tier 1: the amber coin ---- */
+
+.coin {
+  background: var(--l-accent);
+  color: #241a00; /* dark glyph on amber: 9:1 contrast, no glow needed */
+  box-shadow:
+    0 10px 26px -8px color-mix(in srgb, var(--l-accent) 65%, transparent),
+    0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* A thin ring, only while Lantern is actually doing something. */
+.coin-ring {
+  border: 2px solid var(--l-accent);
+  animation: coin 1.9s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+@keyframes coin {
+  0% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.45);
+  }
+}
+
+/* ---- the highlight on the page: the one thing allowed to be loud ---- */
+
+.ring-core {
+  border: 3px solid var(--l-accent);
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 9999px rgba(0, 0, 0, var(--l-dim, 0.45)),
+    0 0 14px 1px color-mix(in srgb, var(--l-accent) 55%, transparent);
+}
+
+.ring-halo {
+  border: 2px solid var(--l-accent);
+  border-radius: 15px;
+  animation: halo 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+.ring-halo-2 {
+  animation-delay: 1.1s;
+}
+
+@keyframes halo {
+  0% {
+    opacity: 0.45;
+    transform: scale(0.99);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+}
+
+/* The connector draws itself toward the target, over and over: direction without words. */
+.connector-flow {
+  stroke-dasharray: 9 7;
+  animation: flow 0.9s linear infinite;
+}
+@keyframes flow {
+  to {
+    stroke-dashoffset: -16;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring-halo,
+  .connector-flow,
+  .coin-ring {
+    animation: none;
+  }
+}

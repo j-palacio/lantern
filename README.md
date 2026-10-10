@@ -19,7 +19,7 @@ Built at Knight Hacks IX for people who find websites hard to use and are the ma
 | Content script (every page)          |          | server/  (Node)                   |
 |  scanner -> numbered element list    |          |   POST /decide -> Gemini          |
 |  overlay -> highlight the next step  |   HTTP   |     next step + scam check        |
-|  widget  -> talk button, visualizer  | <------> |   speech-to-text -> ElevenLabs    |
+|  UI (React, built from ui/)          | <------> |   speech-to-text -> ElevenLabs    |
 | Service worker: step loop            |          |   text-to-speech -> ElevenLabs    |
 | Offscreen document: mic              |          |                                   |
 +--------------------------------------+          +-----------------------------------+
@@ -33,7 +33,7 @@ Requirements: Node 20.12+, Google Chrome, a Gemini API key and an ElevenLabs API
 
 1. **Keys.** Copy `server/.env.example` to `server/.env` and fill in `GEMINI_API_KEY`, `ELEVENLABS_API_KEY` and `ELEVENLABS_VOICE_ID`. `.env` is gitignored; never commit it.
 2. **Backend.** `cd server && npm run dev`. The startup line says which parts are real and which are mocked.
-3. **Extension.** In Chrome open `chrome://extensions`, turn on Developer mode, click **Load unpacked** and pick the `extension/` folder. A welcome tab opens: click **Allow microphone** once.
+3. **Extension.** In Chrome open `chrome://extensions`, turn on Developer mode, click **Load unpacked** and pick the `extension/` folder. A welcome tab opens: click **Allow microphone** once. The built UI (`extension/dist/content.js`) is committed, so this works without installing anything. Only if you want to *change* the UI: `cd ui && npm install && npm run build` (or `npm run watch`).
 4. **Try it.** Open `http://localhost:8787/demo/`, click the round Lantern button (bottom right) or press **Alt+L**, and say or type "pay my bill".
 
 Check the backend with `cd server && npm run smoke` while it is running.
@@ -41,7 +41,8 @@ Check the backend with `cd server && npm run smoke` while it is running.
 ## Repository
 
 ```
-extension/   Chrome extension (Manifest V3, plain JS, no build step)
+extension/   Chrome extension (Manifest V3). content/ and sw/ are plain JS; dist/ is built
+ui/          The in-page UI: React + TypeScript + Tailwind + Framer Motion (Vite build)
 server/      Node backend: Gemini decisions, scam check, ElevenLabs voice (zero dependencies)
 demo/        Demo pages, served at http://localhost:8787/demo/
 docs/        ARCHITECTURE.md (design + contracts), MILESTONES.md (who builds what)
@@ -49,7 +50,7 @@ docs/        ARCHITECTURE.md (design + contracts), MILESTONES.md (who builds wha
 
 ## Built with
 
-Chrome Extensions (Manifest V3), Google Gemini API, ElevenLabs, Node.js.
+Chrome Extensions (Manifest V3), Google Gemini API, ElevenLabs, Node.js, React, TypeScript, Tailwind CSS, Framer Motion, Vite.
 
 ## Inspiration
 
