@@ -11,12 +11,14 @@ The skeleton already runs end to end with mock data: type a goal, Lantern scans 
 
 3. Test it the way the milestone says, push your branch, and open a pull request. J merges.
 
+API keys: copy `server/.env.example` to `server/.env` and add your own free Gemini key from aistudio.google.com/apikey. Never commit `.env` or paste keys in chat. Only Milestone 1 needs ElevenLabs; without it Lantern uses the browser's voice.
+
 | # | Milestone | Owner | Status |
 |---|---|---|---|
 | 1 | Real voice: ElevenLabs STT + TTS, visualizer | J | Not started |
-| 2 | Real decisions: Gemini, validation, prompt | TBD | Not started |
-| 3 | Overlay, widget and scanner polish | TBD | Not started |
-| 4 | Scam check rules + demo pages | TBD | Not started |
+| 2 | Real decisions: Gemini, validation, prompt | Andrew (@abSWU) | Not started |
+| 3 | Overlay, widget and scanner polish | Juan (@juanlopolicaarpio) | Not started |
+| 4 | Scam check rules + demo pages | Xiangtao (@PineXW3) | Not started |
 | 5 | Demo script, Devpost, backup video | Everyone | Saturday evening |
 
 ---
@@ -38,7 +40,7 @@ The skeleton already runs end to end with mock data: type a goal, Lantern scans 
 
 ---
 
-## Milestone 2 - Real decisions (owner: TBD)
+## Milestone 2 - Real decisions (Andrew)
 
 **Goal:** Gemini picks the right button reliably on the demo pages and on one real site.
 
@@ -54,7 +56,7 @@ The skeleton already runs end to end with mock data: type a goal, Lantern scans 
 
 ---
 
-## Milestone 3 - Overlay, widget and scanner polish (owner: TBD)
+## Milestone 3 - Overlay, widget and scanner polish (Juan)
 
 **Goal:** it looks great and never points at the wrong thing.
 
@@ -71,7 +73,7 @@ The skeleton already runs end to end with mock data: type a goal, Lantern scans 
 
 ---
 
-## Milestone 4 - Scam check + demo pages (owner: TBD)
+## Milestone 4 - Scam check + demo pages (Xiangtao)
 
 **Goal:** the scam warning in the demo is impossible to miss and never fires on the honest page.
 
