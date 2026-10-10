@@ -1,0 +1,13 @@
+{
+  "name": "lantern-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Lantern backend: Gemini decisions, scam check, ElevenLabs voice",
+  "engines": { "node": ">=20.12" },
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js",
+    "smoke": "node scripts/smoke.js"
+  }
+}
