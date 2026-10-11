@@ -44,6 +44,9 @@ export const LANGS: Array<{ code: string; label: string }> = [
   { code: "zh", label: "中文" },
   { code: "vi", label: "Tiếng Việt" },
   { code: "ht", label: "Kreyòl" },
+  // "tl" is what the rest of Lantern uses: server/voice.js maps ElevenLabs' tgl and fil onto it,
+  // so a spoken Filipino goal and a typed one land on the same code.
+  { code: "tl", label: "Filipino" },
 ];
 
 const browserLang = (navigator.language || "en").slice(0, 2).toLowerCase();

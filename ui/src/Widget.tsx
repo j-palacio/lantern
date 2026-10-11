@@ -273,9 +273,14 @@ function TaskPanel({ state }: { state: State }) {
         )}
       </div>
 
+      {/* `highlight` is null whenever nothing on THIS page moves the goal forward - the step is
+          "go to amazon.com" or "scroll down". Promising a highlight that was never drawn sends
+          the user hunting for it (ARCHITECTURE section 6.2). */}
       {status === "guiding" && (
         <p className="mt-2.5 text-meta text-muted">
-          Look for the highlighted button on the page. I'll notice when you do it, then say the next step out loud.
+          {state.step?.target
+            ? "Look for the highlighted button on the page. I'll notice when you do it, then say the next step out loud."
+            : "Nothing on this page to point at yet. Do this, and I'll pick up again on the next page."}
         </p>
       )}
       {(finished || failed) && (

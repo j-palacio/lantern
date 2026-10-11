@@ -11,6 +11,7 @@ const PAD = 7; // ring padding around the element
 const GAP = 38; // space between target and caption; the connector lives in here
 const EDGE = 14; // keep this far from the window edges
 const TIP = 13; // arrowhead stops this far short of the ring
+const BEAK_MAX = 64; // closer than this, the caption points with a beak instead of a line
 
 type Box = { l: number; t: number; w: number; h: number };
 type Side = "below" | "above" | "right" | "left";
@@ -155,22 +156,32 @@ export function Overlay({ step }: { step: Step | null }) {
       const ux = dx / len;
       const uy = dy / len;
       const to = { x: near.x - ux * TIP, y: near.y - uy * TIP };
-      const visible = onScreen && len > TIP * 1.6;
+
+      // The caption sits under the target by default, so the hop is normally one GAP wide.
+      // A ~25 px line with a head on it does not read as a connector at that size - it reads
+      // as a stray orange mark dropped on the page's own text. Close in, draw the caption's
+      // beak instead, the way a speech bubble points; the line is for the side placements.
+      const beak = len < BEAK_MAX;
+      const lineVisible = onScreen && !beak && len > TIP * 1.6;
+      const headVisible = onScreen && (beak || lineVisible);
 
       if (line.current) {
         line.current.setAttribute("d", `M ${from.x} ${from.y} L ${to.x} ${to.y}`);
-        line.current.style.opacity = visible ? "1" : "0";
+        line.current.style.opacity = lineVisible ? "1" : "0";
       }
       if (head.current) {
         const px = -uy;
         const py = ux;
-        const tipX = to.x + ux * 11;
-        const tipY = to.y + uy * 11;
+        // The beak grows out of the caption edge; the long-range head stops short of the ring.
+        const base = beak ? from : to;
+        const reach = beak ? 10 : 11;
+        const half = beak ? 9 : 7;
         head.current.setAttribute(
           "points",
-          `${tipX},${tipY} ${to.x + px * 7},${to.y + py * 7} ${to.x - px * 7},${to.y - py * 7}`,
+          `${base.x + ux * reach},${base.y + uy * reach} ` +
+            `${base.x + px * half},${base.y + py * half} ${base.x - px * half},${base.y - py * half}`,
         );
-        head.current.style.opacity = visible ? "1" : "0";
+        head.current.style.opacity = headVisible ? "1" : "0";
       }
     };
 

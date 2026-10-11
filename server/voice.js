@@ -57,6 +57,10 @@ export async function transcribe(audio, mime) {
   }
 }
 
+// "<model>|<lang>" pairs the TTS model refused as a language_code; learned at runtime from
+// its own error, so a model that gains a language later just starts working.
+const NO_LANG_HINT = new Set();
+
 // Small cache: the same instruction or warning is often spoken more than once.
 const cache = new Map();
 const CACHE_MAX = 50;
@@ -82,23 +86,38 @@ export async function speak(text, lang) {
   if (cache.has(key)) return { audio: cache.get(key) };
 
   const body = { text, model_id: model };
-  if (TTS_TAKES_LANG(model) && lang) body.language_code = lang;
+  if (TTS_TAKES_LANG(model) && lang && !NO_LANG_HINT.has(`${model}|${lang}`)) body.language_code = lang;
 
   const started = Date.now();
-  try {
-    const res = await fetch(
-      `${BASE()}/v1/text-to-speech/${encodeURIComponent(voice)}?output_format=mp3_44100_64`,
-      {
-        method: "POST",
-        headers: {
-          "xi-api-key": process.env.ELEVENLABS_API_KEY,
-          "Content-Type": "application/json",
-          Accept: "audio/mpeg",
-        },
-        body: JSON.stringify(body),
-        signal: AbortSignal.timeout(15000),
+  const post = () =>
+    fetch(`${BASE()}/v1/text-to-speech/${encodeURIComponent(voice)}?output_format=mp3_44100_64`, {
+      method: "POST",
+      headers: {
+        "xi-api-key": process.env.ELEVENLABS_API_KEY,
+        "Content-Type": "application/json",
+        Accept: "audio/mpeg",
       },
-    );
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(15000),
+    });
+
+  try {
+    let res = await post();
+    // Some languages are rejected as a language_code even though the model reads them fine
+    // from the text itself - Tagalog on flash_v2_5 and v3 is one. Losing the ElevenLabs voice
+    // over a hint we did not need is worse than dropping the hint, so retry without it once.
+    if (!res.ok && body.language_code) {
+      const detail = (await res.text()).slice(0, 200);
+      if (/language_code/i.test(detail)) {
+        console.warn(`[lantern] tts: ${model} rejects language_code=${lang}, retrying without it`);
+        NO_LANG_HINT.add(`${model}|${lang}`);
+        delete body.language_code;
+        res = await post();
+      } else {
+        console.error(`[lantern] tts http ${res.status}: ${detail}`);
+        return { error: `tts_http_${res.status}` };
+      }
+    }
     if (!res.ok) {
       console.error(`[lantern] tts http ${res.status}: ${(await res.text()).slice(0, 200)}`);
       return { error: `tts_http_${res.status}` };
