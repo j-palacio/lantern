@@ -47,6 +47,11 @@ Scam check:
   fields on pages that are not https.
 - The rule engine already found these flags: {FLAGS}.
 - Set scam.risk to "low", "medium" or "high" and scam.reason to one short sentence in {LANG_NAME} ("" when low).
+  - "high": the page asks to pay with gift cards, crypto or a wire transfer AND also has an urgent threat or a
+    lookalike domain. A lookalike domain that asks for a card or password may also be "high".
+  - "medium": only one kind of warning sign. A gift-card or crypto payment request with nothing else is "medium",
+    never "high", and so are urgent threats with nothing else.
+  - "low": none of these.
 - If risk is "high", set highlight to null and make "say" the warning: tell the user not to pay or type anything here.
 
 Answer with JSON only:

@@ -4,7 +4,7 @@ import { scamFlags, riskFloor, maxRisk } from "./scam.js";
 
 const GEMINI_URL = (model) =>
   `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-const TIMEOUT_MS = 12000; // one Gemini call
+const TIMEOUT_MS = 7000;  // one Gemini call; a normal answer takes 1-2 s, so two tries fit in the budget
 const BUDGET_MS = 18000;  // whole /decide, including the retry; the extension gives up at 20 s (sw/api.js)
 const MIN_RETRY_MS = 3000; // not worth retrying with less time left than this
 
@@ -106,12 +106,19 @@ const BUSY_PAUSE_MS = 800;
 async function callGemini(body, deadline) {
   let res;
   for (let attempt = 1; ; attempt++) {
-    res = await fetch(GEMINI_URL(process.env.GEMINI_MODEL || "gemini-3.1-flash-lite"), {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(Math.max(1, Math.min(TIMEOUT_MS, deadline - Date.now()))),
-    });
+    try {
+      res = await fetch(GEMINI_URL(process.env.GEMINI_MODEL || "gemini-3.1-flash-lite"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY },
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(Math.max(1, Math.min(TIMEOUT_MS, deadline - Date.now()))),
+      });
+    } catch (err) {
+      // Now and then a call hangs instead of answering; a fresh call usually answers in a second.
+      if (attempt !== 1 || err.name !== "TimeoutError" || deadline - Date.now() < MIN_RETRY_MS) throw err;
+      console.warn("[lantern] gemini hung, retrying");
+      continue;
+    }
     const canRetry = attempt === 1 && BUSY.has(res.status) && deadline - Date.now() >= MIN_RETRY_MS + BUSY_PAUSE_MS;
     if (!canRetry) break;
     console.warn(`[lantern] gemini busy (${res.status}), retrying`);

@@ -84,10 +84,11 @@ await check("scam: an urgent-only page is medium", async () => {
   return r;
 });
 
-await check("scam: a lookalike domain with a card field is medium", async () => {
+// The rules alone say "medium" here; Gemini may raise it to "high", which is fine for a fake domain taking a card.
+await check("scam: a lookalike domain with a card field is at least medium", async () => {
   const r = await scamCase("http://sunr1se-power-secure-pay.com/login", "Sunrise Power - Pay your bill", "Welcome back. Enter your card to continue.",
     [...elements, cardField]);
-  if (r.scam?.risk !== "medium") throw new Error(`risk was ${r.scam?.risk}`);
+  if (!["medium", "high"].includes(r.scam?.risk)) throw new Error(`risk was ${r.scam?.risk}`);
   return r;
 });
 
