@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sunrise Power - My Account</title>
+<link rel="stylesheet" href="sunrise.css">
+</head>
+<body>
+  <div class="util"><div class="wrap"><a href="#">Report an outage</a><a href="#">Contact us</a><span class="right">Account ending 4821</span></div></div>
+  <header class="site">
+    <div class="wrap bar">
+      <a class="logo" href="account.html">
+        <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="7" fill="#f6a821"/><g stroke="#f6a821" stroke-width="2.4" stroke-linecap="round"><path d="M15 2v4M15 24v4M2 15h4M24 15h4M5.8 5.8l2.8 2.8M21.4 21.4l2.8 2.8M5.8 24.2l2.8-2.8M21.4 8.6l2.8-2.8"/></g></svg>
+        Sunrise Power
+      </a>
+      <nav><a class="on" href="account.html">Overview</a><a href="pay.html">Billing &amp; payments</a><a href="#">Usage</a><a href="#">Outages</a></nav>
+      <div class="who"><span>Hi, Maria</span><a href="index.html">Sign out</a></div>
+    </div>
+  </header>
+  <a class="offer" href="scam.html">Special offer: save 50% on your next statement</a>
+  <main>
+    <div class="grid">
+      <div class="stack">
+        <section class="card">
+          <h1>Hello, Maria</h1>
+          <p class="sub">Here's your electric account at a glance.</p>
+          <div class="balance">
+            <div>Your balance: <strong class="amount">$84.12</strong></div>
+            <div class="muted">due October 20.</div>
+          </div>
+          <div class="actions">
+            <a class="btn" href="#">View usage</a>
+            <a class="btn" href="#" id="paperlessBtn">Paperless billing</a>
+            <a class="btn primary" href="pay.html" id="payBtn">Pay bill</a>
+          </div>
+        </section>
+        <section class="card">
+          <h3>Recent activity</h3>
+          <table class="activity">
+            <tr><td>Sep 22</td><td>Statement issued</td><td>$84.12</td></tr>
+            <tr><td>Sep 14</td><td>Payment received, thank you</td><td>$96.40</td></tr>
+            <tr><td>Aug 22</td><td>Statement issued</td><td>$96.40</td></tr>
+          </table>
+        </section>
+      </div>
+      <aside class="card">
+        <h3>Your usage</h3>
+        <div class="chart" aria-hidden="true">
+          <div class="col"><span style="height:62%"></span></div>
+          <div class="col"><span style="height:78%"></span></div>
+          <div class="col"><span style="height:92%"></span></div>
+          <div class="col"><span style="height:100%"></span></div>
+          <div class="col"><span style="height:84%"></span></div>
+          <div class="col now"><span style="height:71%"></span></div>
+        </div>
+        <div class="months" aria-hidden="true"><div>May</div><div>Jun</div><div>Jul</div><div>Aug</div><div>Sep</div><div>Oct</div></div>
+        <p class="muted" style="margin:16px 0 0">This month: <strong style="color:var(--ink)">612 kWh</strong>, 8% less than last month.</p>
+        <div class="tips">
+          <div class="tip"><div class="dot">&#127744;</div><div><strong>Hurricane season</strong><p>Keep a flashlight and a charged phone ready.</p></div></div>
+          <div class="tip"><div class="dot">&#9201;</div><div><strong>Save after 9 PM</strong><p>Run the dishwasher and laundry off-peak.</p></div></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <footer class="site">Sunrise Power is a made-up utility created for this demo.</footer>
+
+  <div class="overlay" id="paperless" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="paperless-title">
+      <button class="close" id="paperlessX" aria-label="Close">&times;</button>
+      <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 3h9l3 3v15H6z" stroke="currentColor" stroke-width="1.6"/><path d="M9 12c1.5 2 4.5 2 6 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+      <h2 id="paperless-title">Go paperless with Sunrise Power</h2>
+      <p class="muted">Get your bill by email instead of paper, usually a few days sooner. You can switch back anytime.</p>
+      <div class="actions" style="margin-top:18px">
+        <button class="primary" id="paperlessYes">Go paperless</button>
+        <button id="paperlessNo">Maybe later</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const box = document.getElementById("paperless");
+    const close = () => { box.hidden = true; try { sessionStorage.setItem("sunrise:paperlessAsked", "1"); } catch {} };
+    let asked = false;
+    try { asked = sessionStorage.getItem("sunrise:paperlessAsked") === "1"; } catch {}
+    if (!asked) setTimeout(() => { box.hidden = false; }, 700);
+    paperlessX.onclick = paperlessNo.onclick = close;
+    paperlessYes.onclick = () => { close(); paperlessBtn.textContent = "Paperless: on"; };
+    paperlessBtn.onclick = (e) => { e.preventDefault(); box.hidden = false; };
+  </script>
+</body>
+</html>
