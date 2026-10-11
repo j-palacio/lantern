@@ -4,7 +4,7 @@ import { scamFlags, riskFloor, maxRisk } from "./scam.js";
 
 const GEMINI_URL = (model) =>
   `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-const TIMEOUT_MS = 7000;  // one Gemini call; a normal answer takes 1-2 s, so two tries fit in the budget
+const TIMEOUT_MS = 9000;  // one Gemini call; a normal answer takes 1-2 s, and two tries just fit in the budget
 const BUDGET_MS = 18000;  // whole /decide, including the retry; the extension gives up at 20 s (sw/api.js)
 const MIN_RETRY_MS = 3000; // not worth retrying with less time left than this
 
