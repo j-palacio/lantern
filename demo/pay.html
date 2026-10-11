@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sunrise Power - Pay your bill</title>
+<link rel="stylesheet" href="sunrise.css">
+</head>
+<body>
+  <div class="util"><div class="wrap"><a href="#">Report an outage</a><a href="#">Contact us</a><span class="right">Account ending 4821</span></div></div>
+  <header class="site">
+    <div class="wrap bar">
+      <a class="logo" href="account.html">
+        <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="7" fill="#f6a821"/><g stroke="#f6a821" stroke-width="2.4" stroke-linecap="round"><path d="M15 2v4M15 24v4M2 15h4M24 15h4M5.8 5.8l2.8 2.8M21.4 21.4l2.8 2.8M5.8 24.2l2.8-2.8M21.4 8.6l2.8-2.8"/></g></svg>
+        Sunrise Power
+      </a>
+      <nav><a href="account.html">Overview</a><a class="on" href="pay.html">Billing &amp; payments</a><a href="#">Usage</a><a href="#">Outages</a></nav>
+      <div class="who"><span>Hi, Maria</span><a href="index.html">Sign out</a></div>
+    </div>
+  </header>
+  <main>
+    <div class="grid">
+      <div class="stack">
+        <section class="card" id="form">
+          <div class="steps"><span class="on">1. Payment</span><span>2. Done</span></div>
+          <h1>Pay your bill</h1>
+          <p class="sub">Choose an amount and enter your card.</p>
+          <div class="choice-group">
+            <label class="choice"><input type="radio" name="amount" value="84.12" checked> Statement balance <strong>$84.12</strong></label>
+            <label class="choice"><input type="radio" name="amount" value="other"> Other amount</label>
+          </div>
+          <label>Card number <input type="text" id="card" inputmode="numeric" placeholder="1234 5678 9012 3456"></label>
+          <p class="error" id="err" hidden>Enter your card number.</p>
+          <p style="margin:22px 0 0"><button class="primary" id="submit">Submit payment</button></p>
+        </section>
+        <section class="card thanks" id="thanks" hidden>
+          <div class="check">&#10003;</div>
+          <div>
+            <h2 style="margin:0">Thank you! Your payment was received.</h2>
+            <p class="muted" style="margin:4px 0 0">$84.12 paid. Confirmation number <strong>SP-48210</strong>.</p>
+            <p style="margin:12px 0 0"><a href="account.html">Back to my account</a></p>
+          </div>
+        </section>
+      </div>
+      <aside class="card">
+        <h3>Bill summary</h3>
+        <table class="activity">
+          <tr><td>Previous balance</td><td></td><td>$96.40</td></tr>
+          <tr><td>Payment received</td><td></td><td>-$96.40</td></tr>
+          <tr><td>New charges</td><td></td><td>$84.12</td></tr>
+          <tr><td><strong>Amount due Oct 20</strong></td><td></td><td>$84.12</td></tr>
+        </table>
+        <p class="muted" style="margin:16px 0 0;font-size:15px">Payments made before 8 PM post the same day.</p>
+      </aside>
+    </div>
+  </main>
+  <footer class="site">Sunrise Power is a made-up utility created for this demo.</footer>
+  <script>
+    submit.onclick = () => {
+      if (card.value.replace(/\D/g, "").length < 4) { err.hidden = false; return; }
+      form.hidden = true; thanks.hidden = false;
+    };
+  </script>
+</body>
+</html>
