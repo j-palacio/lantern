@@ -11,7 +11,7 @@ try {
   // No .env yet: the server still runs, /decide answers with mock steps.
 }
 
-const { decide } = await import("./decide.js");
+const { decide, scamCheck } = await import("./decide.js");
 const { transcribe, speak } = await import("./voice.js");
 
 const PORT = Number(process.env.PORT || 8787);
@@ -60,6 +60,16 @@ const routes = {
       return sendJson(res, 400, { error: "missing_goal_or_elements", retryable: false });
     }
     sendJson(res, 200, await decide(body));
+  },
+
+  "POST /scamcheck": async (req, res) => {
+    let body;
+    try {
+      body = JSON.parse((await readBody(req, 2 * MB)).toString("utf8"));
+    } catch {
+      return sendJson(res, 400, { error: "bad_json" });
+    }
+    sendJson(res, 200, scamCheck(body));
   },
 
   "POST /transcribe": async (req, res) => {

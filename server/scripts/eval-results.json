@@ -1,0 +1,677 @@
+{
+  "summary": {
+    "model": "gemini-3.5-flash-lite",
+    "screens": 11,
+    "languages": 2,
+    "runs": 3,
+    "calls": 66,
+    "accuracy": "100.0",
+    "accuracy_en": "100.0",
+    "accuracy_es": "100.0",
+    "median_s": "1.18",
+    "p90_s": "2.15",
+    "errors": 0
+  },
+  "rows": [
+    {
+      "lang": "en",
+      "name": "sign-in page: start with username",
+      "ok": true,
+      "secs": 4.608221334,
+      "highlight": 8,
+      "done": false,
+      "error": null,
+      "say": "Click \"Username\" and type your username."
+    },
+    {
+      "lang": "en",
+      "name": "sign-in page: start with username",
+      "ok": true,
+      "secs": 1.3211549589999996,
+      "highlight": 8,
+      "done": false,
+      "error": null,
+      "say": "Click \"Username\" and type your username."
+    },
+    {
+      "lang": "en",
+      "name": "sign-in page: start with username",
+      "ok": true,
+      "secs": 1.8488573749999997,
+      "highlight": 8,
+      "done": false,
+      "error": null,
+      "say": "Click \"Username\" and type your username."
+    },
+    {
+      "lang": "en",
+      "name": "account: pay bill",
+      "ok": true,
+      "secs": 1.4869905420000005,
+      "highlight": 12,
+      "done": false,
+      "error": null,
+      "say": "Click \"Pay bill\"."
+    },
+    {
+      "lang": "en",
+      "name": "account: pay bill",
+      "ok": true,
+      "secs": 1.4446460829999996,
+      "highlight": 12,
+      "done": false,
+      "error": null,
+      "say": "Click \"Pay bill\"."
+    },
+    {
+      "lang": "en",
+      "name": "account: pay bill",
+      "ok": true,
+      "secs": 1.1333018749999992,
+      "highlight": 12,
+      "done": false,
+      "error": null,
+      "say": "Click \"Pay bill\"."
+    },
+    {
+      "lang": "en",
+      "name": "paperless popup: close it",
+      "ok": true,
+      "secs": 1.8418617080000004,
+      "highlight": 3,
+      "done": false,
+      "error": null,
+      "say": "Click \"Maybe later\"."
+    },
+    {
+      "lang": "en",
+      "name": "paperless popup: close it",
+      "ok": true,
+      "secs": 0.8721082499999994,
+      "highlight": 3,
+      "done": false,
+      "error": null,
+      "say": "Click \"Maybe later\"."
+    },
+    {
+      "lang": "en",
+      "name": "paperless popup: close it",
+      "ok": true,
+      "secs": 1.0259561670000004,
+      "highlight": 3,
+      "done": false,
+      "error": null,
+      "say": "Click \"Maybe later\"."
+    },
+    {
+      "lang": "en",
+      "name": "account after popup: pay bill",
+      "ok": true,
+      "secs": 1.8329785419999989,
+      "highlight": 12,
+      "done": false,
+      "error": null,
+      "say": "Click \"Pay bill\"."
+    },
+    {
+      "lang": "en",
+      "name": "account after popup: pay bill",
+      "ok": true,
+      "secs": 1.0805703329999996,
+      "highlight": 12,
+      "done": false,
+      "error": null,
+      "say": "Click \"Pay bill\"."
+    },
+    {
+      "lang": "en",
+      "name": "account after popup: pay bill",
+      "ok": true,
+      "secs": 1.4346715829999994,
+      "highlight": 12,
+      "done": false,
+      "error": null,
+      "say": "Click \"Pay bill\"."
+    },
+    {
+      "lang": "en",
+      "name": "pay page: card number",
+      "ok": true,
+      "secs": 2.150272499999999,
+      "highlight": 11,
+      "done": false,
+      "error": null,
+      "say": "Click \"Card number\" and type your card number."
+    },
+    {
+      "lang": "en",
+      "name": "pay page: card number",
+      "ok": true,
+      "secs": 1.155661415999999,
+      "highlight": 11,
+      "done": false,
+      "error": null,
+      "say": "Click \"Card number\" and type your card number."
+    },
+    {
+      "lang": "en",
+      "name": "pay page: card number",
+      "ok": true,
+      "secs": 0.9153709169999965,
+      "highlight": 11,
+      "done": false,
+      "error": null,
+      "say": "Click \"Card number\" and type your card number."
+    },
+    {
+      "lang": "en",
+      "name": "pay page, card typed: submit",
+      "ok": true,
+      "secs": 1.561497042,
+      "highlight": 12,
+      "done": false,
+      "error": null,
+      "say": "Click \"Submit payment\"."
+    },
+    {
+      "lang": "en",
+      "name": "pay page, card typed: submit",
+      "ok": true,
+      "secs": 1.3228753749999995,
+      "highlight": 12,
+      "done": false,
+      "error": null,
+      "say": "Click \"Submit payment\"."
+    },
+    {
+      "lang": "en",
+      "name": "pay page, card typed: submit",
+      "ok": true,
+      "secs": 1.0259239579999995,
+      "highlight": 12,
+      "done": false,
+      "error": null,
+      "say": "Click \"Submit payment\"."
+    },
+    {
+      "lang": "en",
+      "name": "receipt: goal done",
+      "ok": true,
+      "secs": 1.0350817499999976,
+      "highlight": null,
+      "done": true,
+      "error": null,
+      "say": "Great job! Your electric bill has been successfully paid."
+    },
+    {
+      "lang": "en",
+      "name": "receipt: goal done",
+      "ok": true,
+      "secs": 1.0143456670000015,
+      "highlight": null,
+      "done": true,
+      "error": null,
+      "say": "Great job! Your electric bill has been successfully paid."
+    },
+    {
+      "lang": "en",
+      "name": "receipt: goal done",
+      "ok": true,
+      "secs": 1.3680107500000014,
+      "highlight": null,
+      "done": true,
+      "error": null,
+      "say": "Great job! Your electric bill has been successfully paid."
+    },
+    {
+      "lang": "en",
+      "name": "paperless billing",
+      "ok": true,
+      "secs": 1.1087419999999983,
+      "highlight": 11,
+      "done": false,
+      "error": null,
+      "say": "Click \"Paperless billing\"."
+    },
+    {
+      "lang": "en",
+      "name": "paperless billing",
+      "ok": true,
+      "secs": 1.8446309170000021,
+      "highlight": 11,
+      "done": false,
+      "error": null,
+      "say": "Click \"Paperless billing\"."
+    },
+    {
+      "lang": "en",
+      "name": "paperless billing",
+      "ok": true,
+      "secs": 1.4412485420000012,
+      "highlight": 11,
+      "done": false,
+      "error": null,
+      "say": "Click \"Paperless billing\"."
+    },
+    {
+      "lang": "en",
+      "name": "view usage",
+      "ok": true,
+      "secs": 1.1288982920000052,
+      "highlight": 10,
+      "done": false,
+      "error": null,
+      "say": "Click \"View usage\" to see your energy usage."
+    },
+    {
+      "lang": "en",
+      "name": "view usage",
+      "ok": true,
+      "secs": 1.1845832910000027,
+      "highlight": 10,
+      "done": false,
+      "error": null,
+      "say": "Click \"View usage\" to see your energy details."
+    },
+    {
+      "lang": "en",
+      "name": "view usage",
+      "ok": true,
+      "secs": 1.178274458999993,
+      "highlight": 10,
+      "done": false,
+      "error": null,
+      "say": "Click \"View usage\"."
+    },
+    {
+      "lang": "en",
+      "name": "sign out",
+      "ok": true,
+      "secs": 1.0316552919999957,
+      "highlight": 8,
+      "done": false,
+      "error": null,
+      "say": "Click \"Sign out\"."
+    },
+    {
+      "lang": "en",
+      "name": "sign out",
+      "ok": true,
+      "secs": 1.2317074589999975,
+      "highlight": 8,
+      "done": false,
+      "error": null,
+      "say": "Click \"Sign out\"."
+    },
+    {
+      "lang": "en",
+      "name": "sign out",
+      "ok": true,
+      "secs": 2.257058499999999,
+      "highlight": 8,
+      "done": false,
+      "error": null,
+      "say": "Click \"Sign out\"."
+    },
+    {
+      "lang": "en",
+      "name": "report an outage",
+      "ok": true,
+      "secs": 1.0275462089999927,
+      "highlight": 1,
+      "done": false,
+      "error": null,
+      "say": "Click \"Report an outage\"."
+    },
+    {
+      "lang": "en",
+      "name": "report an outage",
+      "ok": true,
+      "secs": 1.3149934579999971,
+      "highlight": 1,
+      "done": false,
+      "error": null,
+      "say": "Click \"Report an outage\"."
+    },
+    {
+      "lang": "en",
+      "name": "report an outage",
+      "ok": true,
+      "secs": 1.0821551250000048,
+      "highlight": 1,
+      "done": false,
+      "error": null,
+      "say": "Click \"Report an outage\"."
+    },
+    {
+      "lang": "es",
+      "name": "sign-in page: start with username",
+      "ok": true,
+      "secs": 4.95034537499999,
+      "highlight": 8,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Username\" y escriba su nombre de usuario."
+    },
+    {
+      "lang": "es",
+      "name": "sign-in page: start with username",
+      "ok": true,
+      "secs": 1.2722377919999999,
+      "highlight": 8,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Username\" y escriba su usuario."
+    },
+    {
+      "lang": "es",
+      "name": "sign-in page: start with username",
+      "ok": true,
+      "secs": 1.5401073749999923,
+      "highlight": 8,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en el cuadro \"Username\" y escriba su nombre de usuario."
+    },
+    {
+      "lang": "es",
+      "name": "account: pay bill",
+      "ok": true,
+      "secs": 1.1449095830000007,
+      "highlight": 12,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Pay bill\"."
+    },
+    {
+      "lang": "es",
+      "name": "account: pay bill",
+      "ok": true,
+      "secs": 3.281192875000008,
+      "highlight": 12,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Pay bill\"."
+    },
+    {
+      "lang": "es",
+      "name": "account: pay bill",
+      "ok": true,
+      "secs": 1.0164566670000204,
+      "highlight": 12,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Pay bill\"."
+    },
+    {
+      "lang": "es",
+      "name": "paperless popup: close it",
+      "ok": true,
+      "secs": 1.148716083999985,
+      "highlight": 3,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Maybe later\"."
+    },
+    {
+      "lang": "es",
+      "name": "paperless popup: close it",
+      "ok": true,
+      "secs": 0.906427457999991,
+      "highlight": 3,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Maybe later\"."
+    },
+    {
+      "lang": "es",
+      "name": "paperless popup: close it",
+      "ok": true,
+      "secs": 1.0185954160000257,
+      "highlight": 3,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Maybe later\"."
+    },
+    {
+      "lang": "es",
+      "name": "account after popup: pay bill",
+      "ok": true,
+      "secs": 1.052022667000012,
+      "highlight": 12,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Pay bill\"."
+    },
+    {
+      "lang": "es",
+      "name": "account after popup: pay bill",
+      "ok": true,
+      "secs": 1.696289374999993,
+      "highlight": 12,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Pay bill\"."
+    },
+    {
+      "lang": "es",
+      "name": "account after popup: pay bill",
+      "ok": true,
+      "secs": 1.0685442080000067,
+      "highlight": 12,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Pay bill\"."
+    },
+    {
+      "lang": "es",
+      "name": "pay page: card number",
+      "ok": true,
+      "secs": 0.9501735000000044,
+      "highlight": 11,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Card number\" y escriba el número de su tarjeta."
+    },
+    {
+      "lang": "es",
+      "name": "pay page: card number",
+      "ok": true,
+      "secs": 1.1276593749999884,
+      "highlight": 11,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"1234 5678 9012 3456\" e ingrese el número de su tarjeta."
+    },
+    {
+      "lang": "es",
+      "name": "pay page: card number",
+      "ok": true,
+      "secs": 1.5114388749999925,
+      "highlight": 11,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"1234 5678 9012 3456\" y escriba el número de su tarjeta."
+    },
+    {
+      "lang": "es",
+      "name": "pay page, card typed: submit",
+      "ok": true,
+      "secs": 2.4907098329999937,
+      "highlight": 12,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Submit payment\"."
+    },
+    {
+      "lang": "es",
+      "name": "pay page, card typed: submit",
+      "ok": true,
+      "secs": 1.0633577500000102,
+      "highlight": 12,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Submit payment\"."
+    },
+    {
+      "lang": "es",
+      "name": "pay page, card typed: submit",
+      "ok": true,
+      "secs": 1.253124125000002,
+      "highlight": 12,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Submit payment\"."
+    },
+    {
+      "lang": "es",
+      "name": "receipt: goal done",
+      "ok": true,
+      "secs": 1.4095175000000018,
+      "highlight": null,
+      "done": true,
+      "error": null,
+      "say": "¡Felicidades! Su factura de luz ya ha sido pagada."
+    },
+    {
+      "lang": "es",
+      "name": "receipt: goal done",
+      "ok": true,
+      "secs": 1.1518199170000007,
+      "highlight": null,
+      "done": true,
+      "error": null,
+      "say": "¡Muy bien! Su factura ya ha sido pagada."
+    },
+    {
+      "lang": "es",
+      "name": "receipt: goal done",
+      "ok": true,
+      "secs": 1.095737958999991,
+      "highlight": null,
+      "done": true,
+      "error": null,
+      "say": "¡Felicidades! Su factura ha sido pagada con éxito."
+    },
+    {
+      "lang": "es",
+      "name": "paperless billing",
+      "ok": true,
+      "secs": 2.3602250829999973,
+      "highlight": 11,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Paperless billing\"."
+    },
+    {
+      "lang": "es",
+      "name": "paperless billing",
+      "ok": true,
+      "secs": 0.9974469580000005,
+      "highlight": 11,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Paperless billing\"."
+    },
+    {
+      "lang": "es",
+      "name": "paperless billing",
+      "ok": true,
+      "secs": 0.929039791999996,
+      "highlight": 11,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Paperless billing\"."
+    },
+    {
+      "lang": "es",
+      "name": "view usage",
+      "ok": true,
+      "secs": 1.1387616660000057,
+      "highlight": 10,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"View usage\"."
+    },
+    {
+      "lang": "es",
+      "name": "view usage",
+      "ok": true,
+      "secs": 1.3386366249999992,
+      "highlight": 10,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"View usage\"."
+    },
+    {
+      "lang": "es",
+      "name": "view usage",
+      "ok": true,
+      "secs": 1.0220881249999947,
+      "highlight": 10,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"View usage\"."
+    },
+    {
+      "lang": "es",
+      "name": "sign out",
+      "ok": true,
+      "secs": 1.1320023749999963,
+      "highlight": 8,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Sign out\"."
+    },
+    {
+      "lang": "es",
+      "name": "sign out",
+      "ok": true,
+      "secs": 1.2299182079999882,
+      "highlight": 8,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Sign out\"."
+    },
+    {
+      "lang": "es",
+      "name": "sign out",
+      "ok": true,
+      "secs": 1.0185514580000017,
+      "highlight": 8,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Sign out\"."
+    },
+    {
+      "lang": "es",
+      "name": "report an outage",
+      "ok": true,
+      "secs": 1.4670875419999938,
+      "highlight": 1,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Report an outage\"."
+    },
+    {
+      "lang": "es",
+      "name": "report an outage",
+      "ok": true,
+      "secs": 1.3352160829999775,
+      "highlight": 1,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Report an outage\"."
+    },
+    {
+      "lang": "es",
+      "name": "report an outage",
+      "ok": true,
+      "secs": 1.2908082500000018,
+      "highlight": 1,
+      "done": false,
+      "error": null,
+      "say": "Haga clic en \"Report an outage\"."
+    }
+  ]
+}
