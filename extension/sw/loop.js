@@ -1,7 +1,7 @@
 // Step loop: observe -> think -> point -> wait. docs/ARCHITECTURE.md section 5.
 import { getSession, saveSession, clearSession, newSession, isStale } from "./session.js";
 import { captureWithMarks } from "./marks.js";
-import { postDecide } from "./api.js";
+import { postDecide, postScamCheck } from "./api.js";
 import { toggleVoice, speak } from "./voice.js";
 
 const MAX_TURNS = 30;
@@ -12,6 +12,7 @@ export function sendToTab(tabId, msg) {
 }
 
 export async function startGoal(tabId, goal, lang) {
+  chrome.storage.local.set({ lastLang: lang }).catch(() => {}); // the guard speaks in this language
   await saveSession(tabId, newSession(goal, lang));
   await runTurn(tabId);
 }
@@ -50,7 +51,10 @@ export async function onMessage(msg, sender) {
       return { ok: true };
 
     case "LANTERN_HELLO": // a page (re)loaded in this tab
-      if (!s) return null;
+      if (!s) {
+        guard(tabId); // no goal: still warn about scam pages
+        return null;
+      }
       if (isStale(s)) {
         // An old goal must not follow the user onto an unrelated page (section 5).
         console.log("[Lantern:sw] dropping a stale goal in tab", tabId);
@@ -167,4 +171,19 @@ async function runTurn(tabId) {
   await saveSession(tabId, s);
   sendToTab(tabId, { type: "LANTERN_STEP", turn: s.turn, step: { say: res.say, highlight: res.highlight, scam: res.scam } });
   speak(res.say, s.lang, tabId);
+}
+
+/**
+ * Scam guard for pages Lantern is not guiding: a rules-only check (no model call) on every page
+ * load. A high-risk page gets the same red warning and spoken alert as during a goal.
+ */
+async function guard(tabId) {
+  const scan = await sendToTab(tabId, { type: "LANTERN_SCAN" });
+  sendToTab(tabId, { type: "LANTERN_SHOW_UI" });
+  if (!scan) return;
+  const lang = (await chrome.storage.local.get("lastLang").catch(() => ({}))).lastLang || "en";
+  const res = await postScamCheck({ page: scan.page, elements: scan.elements, lang });
+  if (res?.risk !== "high" || (await getSession(tabId))) return; // a goal started meanwhile: it warns itself
+  sendToTab(tabId, { type: "LANTERN_STEP", turn: 0, step: { say: res.say, highlight: null, scam: { risk: "high", reason: res.reason } } });
+  speak(res.say, lang, tabId);
 }

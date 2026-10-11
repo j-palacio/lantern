@@ -16,3 +16,18 @@ export async function postDecide(body) {
   if (!res.ok) return { error: `Server error ${res.status}`, retryable: res.status >= 500 };
   return res.json();
 }
+
+// Rules-only scam check for a page Lantern is not guiding. Never throws: null when the server is down.
+export async function postScamCheck(body) {
+  try {
+    const res = await fetch(`${API}/scamcheck`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(5000),
+    });
+    return res.ok ? res.json() : null;
+  } catch {
+    return null;
+  }
+}

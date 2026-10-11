@@ -50,7 +50,7 @@ export async function decide(req) {
   };
 }
 
-const WARNING = {
+export const WARNING = {
   en: "Stop. This page looks like a scam. Don't pay or enter anything here.",
   es: "Alto. Esta página parece una estafa. No pague ni escriba nada aquí.",
 };
@@ -165,4 +165,28 @@ function mockDecide(req) {
   }
   const say = (MOCK_SAY[req.lang] || MOCK_SAY.en)(best?.text || "?");
   return { say, highlight: best?.id ?? null, scam: { risk: "low", reason: "" }, done: false };
+}
+
+// Rules-only scam check for pages Lantern is not guiding (POST /scamcheck). No model call:
+// instant, free, and the same rules /decide uses as its floor (section 11).
+export function scamCheck({ page = {}, elements = [], lang = "en" }) {
+  const flags = scamFlags(page, elements);
+  const risk = riskFloor(flags);
+  return { risk, reason: risk === "low" ? "" : plainReason(flags, lang), say: risk === "high" ? line(WARNING, lang) : "" };
+}
+
+// Rule flags -> one short sentence a person can read ("payment_trap:bitcoin" is not one).
+const REASONS = {
+  en: { payment: "It asks you to pay with gift cards or crypto", threat: "it threatens or rushes you", domain: "the web address is fake", http: "it asks for your card on an unsafe page" },
+  es: { payment: "Le pide pagar con tarjetas de regalo o criptomonedas", threat: "lo amenaza o lo apura", domain: "la dirección web es falsa", http: "pide su tarjeta en una página insegura" },
+};
+function plainReason(flags, lang) {
+  const t = REASONS[lang] || REASONS.en;
+  const has = (k) => flags.some((f) => f.startsWith(k));
+  const parts = [has("payment_trap:") && t.payment, has("urgent_threat:") && t.threat, has("lookalike_domain:") && t.domain, has("insecure_sensitive_field") && t.http].filter(Boolean);
+  if (!parts.length) return "";
+  const last = parts.pop();
+  const and = lang === "es" ? " y " : " and ";
+  const text = parts.length ? `${parts.join(", ")}${and}${last}` : last;
+  return text.charAt(0).toUpperCase() + text.slice(1) + ".";
 }
